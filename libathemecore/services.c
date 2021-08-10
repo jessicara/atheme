@@ -458,7 +458,7 @@ handle_burstlogin(struct user *u, const char *login, time_t ts)
 			slog(LG_DEBUG, "handle_burstlogin(): got nonexistent login %s for user %s", login, u->nick);
 			if (authservice_loaded)
 			{
-				notice(nicksvs.nick ? nicksvs.nick : me.name, u->nick, "Account %s dropped, forcing logout", login);
+				//notice(nicksvs.nick ? nicksvs.nick : me.name, u->nick, "Account %s dropped, forcing logout", login);
 				ircd_logout_or_kill(u, login);
 			}
 			return;
@@ -478,7 +478,7 @@ handle_burstlogin(struct user *u, const char *login, time_t ts)
 		slog(LG_INFO, "handle_burstlogin(): got stale login %s for user %s", login, u->nick);
 		if (authservice_loaded)
 		{
-			notice(nicksvs.nick ? nicksvs.nick : me.name, u->nick, "Login to account %s is stale, forcing logout", login);
+			//notice(nicksvs.nick ? nicksvs.nick : me.name, u->nick, "Login to account %s is stale, forcing logout", login);
 			ircd_logout_or_kill(u, login);
 		}
 		return;
@@ -489,7 +489,7 @@ handle_burstlogin(struct user *u, const char *login, time_t ts)
 		 * be legit...
 		 * if we have an authentication service, log them out */
 		slog(LG_INFO, "handle_burstlogin(): got illegit login %s for user %s", login, u->nick);
-		notice(nicksvs.nick ? nicksvs.nick : me.name, u->nick, "Login to account %s seems invalid, forcing logout", login);
+		//notice(nicksvs.nick ? nicksvs.nick : me.name, u->nick, "Login to account %s seems invalid, forcing logout", login);
 		ircd_logout_or_kill(u, login);
 		return;
 	}
