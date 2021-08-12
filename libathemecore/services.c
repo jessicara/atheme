@@ -262,6 +262,8 @@ services_init(void)
 			if (!ircd->uses_uid)
 				kill_id_sts(NULL, svs->nick, "Attempt to use service nick");
 			introduce_nick(svs->me);
+		} else {
+			slog(LG_ERROR, "check failed: svs->me != NULL");
 		}
 	}
 }
