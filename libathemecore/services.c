@@ -254,13 +254,15 @@ services_init(void)
 
 	MOWGLI_PATRICIA_FOREACH(svs, &state, services_name)
 	{
-		if (ircd->uses_uid && svs->me->uid == NULL)
-			user_changeuid(svs->me, uid_get());
-		else if (!ircd->uses_uid && svs->me->uid != NULL)
-			user_changeuid(svs->me, NULL);
-		if (!ircd->uses_uid)
-			kill_id_sts(NULL, svs->nick, "Attempt to use service nick");
-		introduce_nick(svs->me);
+		if (svs->me != NULL) {
+			if (ircd->uses_uid && svs->me->uid == NULL)
+				user_changeuid(svs->me, uid_get());
+			else if (!ircd->uses_uid && svs->me->uid != NULL)
+				user_changeuid(svs->me, NULL);
+			if (!ircd->uses_uid)
+				kill_id_sts(NULL, svs->nick, "Attempt to use service nick");
+			introduce_nick(svs->me);
+		}
 	}
 }
 
