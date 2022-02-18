@@ -9,18 +9,29 @@
 
 #include <atheme.h>
 
+#define VERIFY_STR_THANKS   _("Thank you for verifying your e-mail address! You have taken steps in ensuring that your registrations are not exploited.")
+#define VERIFY_STR_CONFIRM  _("\2%s\2 has now been verified.")
+
 static void
-ns_verify_activate_account(struct sourceinfo *si, struct myuser *mu)
+ns_verify_activate_account(struct sourceinfo *si, struct myuser *mu, bool force)
 {
 	mowgli_node_t *n;
 	struct hook_user_req req;
+
 	mu->flags &= ~MU_WAITAUTH;
 
 	metadata_delete(mu, "private:verify:register:key");
 	metadata_delete(mu, "private:verify:register:timestamp");
 
-	command_success_nodata(si, _("\2%s\2 has now been verified."), entity(mu)->name);
-	command_success_nodata(si, _("Thank you for verifying your e-mail address! You have taken steps in ensuring that your registrations are not exploited."));
+	myuser_notice(nicksvs.nick, mu, VERIFY_STR_CONFIRM, entity(mu)->name);
+	if (!force)
+		myuser_notice(nicksvs.nick, mu, VERIFY_STR_THANKS);
+	if (si->smu != mu) {
+		command_success_nodata(si, VERIFY_STR_CONFIRM, entity(mu)->name);
+		if (!force)
+			command_success_nodata(si, VERIFY_STR_THANKS);
+	}
+
 	MOWGLI_ITER_FOREACH(n, mu->logins.head)
 	{
 		struct user *u = n->data;
@@ -67,7 +78,7 @@ ns_cmd_verify(struct sourceinfo *si, int parc, char *parv[])
 		if (!strcasecmp(key, md->value))
 		{
 			logcommand(si, CMDLOG_SET, "VERIFY:REGISTER: \2%s\2 (email: \2%s\2)", entity(mu)->name, mu->email);
-			ns_verify_activate_account(si, mu);
+			ns_verify_activate_account(si, mu, false);
 			return;
 		}
 
@@ -118,7 +129,7 @@ ns_cmd_verify(struct sourceinfo *si, int parc, char *parv[])
 
 			if (metadata_find(mu, "private:verify:register:key"))
 			{
-				ns_verify_activate_account(si, mu);
+				ns_verify_activate_account(si, mu, false);
 			}
 
 			return;
@@ -168,7 +179,7 @@ ns_cmd_fverify(struct sourceinfo *si, int parc, char *parv[])
 		}
 
 		logcommand(si, CMDLOG_SET, "FVERIFY:REGISTER: \2%s\2 (email: \2%s\2)", entity(mu)->name, mu->email);
-		ns_verify_activate_account(si, mu);
+		ns_verify_activate_account(si, mu, true);
 
 		return;
 	}
@@ -194,7 +205,7 @@ ns_cmd_fverify(struct sourceinfo *si, int parc, char *parv[])
 
 		if (metadata_find(mu, "private:verify:register:key"))
 		{
-			ns_verify_activate_account(si, mu);
+			ns_verify_activate_account(si, mu, true);
 		}
 
 		return;

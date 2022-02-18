@@ -374,7 +374,7 @@ struct myuser_name *myuser_name_add(const char *name);
 void myuser_name_remember(const char *name, struct myuser *mu);
 void myuser_name_restore(const char *name, struct myuser *mu);
 
-struct mycertfp *mycertfp_add(struct myuser *mu, const char *certfp);
+struct mycertfp *mycertfp_add(struct myuser *mu, const char *certfp, bool force);
 void mycertfp_delete(struct mycertfp *mcfp);
 struct mycertfp *mycertfp_find(const char *certfp);
 
@@ -424,5 +424,8 @@ extern mowgli_list_t svs_ignore_list;
 struct svsignore *svsignore_find(struct user *user);
 struct svsignore *svsignore_add(const char *mask, const char *reason) ATHEME_FATTR_MALLOC ATHEME_FATTR_RETURNS_NONNULL;
 void svsignore_delete(struct svsignore *svsignore);
+
+/* check if user is at the login limit or if they are exempt */
+bool user_loginmaxed(struct myuser *mu);
 
 #endif /* !ATHEME_INC_ACCOUNT_H */
